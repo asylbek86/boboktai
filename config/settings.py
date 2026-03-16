@@ -7,9 +7,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
+DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1",
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -56,13 +59,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# For faster MVP setup use SQLite.
-# Later you can switch ENGINE and credentials to PostgreSQL.
+import dj_database_url
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get(
+            "DATABASE_URL",
+            f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        ),
+        conn_max_age=600,
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -102,4 +108,6 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Backend API documentation",
     "VERSION": "1.0.0",
 }
+
+from . import firebase  # noqa: E402,F401
 

@@ -36,6 +36,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=20, default="user")
     is_active = models.BooleanField(default=True)
+    firebase_uid = models.CharField(max_length=200, unique=True, null=True, blank=True)
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = ["full_name"]
